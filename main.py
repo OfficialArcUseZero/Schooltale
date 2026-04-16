@@ -61,8 +61,6 @@ outside_dialogue_1 = cutscene_font.render('...', False, 'white')
 outside_dialogue_2 = cutscene_font.render('Okay Tomori High...', False, 'white')
 outside_dialogue_3 = cutscene_font.render("Let's see what you got.", False, 'white')
 
-
-
 # INSIDE_CUTSCENE
 inside_background_surf = pygame.image.load('images/inside_bg.png')
 inside_background_rect = inside_background_surf.get_rect()
@@ -121,8 +119,7 @@ while True:
         if current_state == "MENU":
             if event.type == pygame.MOUSEBUTTONDOWN:
                 current_state = "CUTSCENE1"
-                cutscene_start_time = pygame.time.get_ticks()
-                
+                cutscene_start_time = pygame.time.get_ticks()         
 
     # MENU
     if current_state == "MENU":
@@ -391,17 +388,31 @@ while True:
         screen.fill("black")
 
         victory_font = pygame.font.Font("fonts/PixelOperatorHB8.ttf", 50)
-        victory_text = victory_font.render("Victory!", True, (0, 255, 0))
+        victory_text = victory_font.render("VICTORY!", True, (0, 255, 0))
 
         victory_font2 = pygame.font.Font("fonts/PixelOperator8.ttf", 20)
         victory_text2 = victory_font2.render("Thanks for playing the demo!", True, (255, 255, 255))
 
+        # blinking text
+        t = pygame.time.get_ticks()
+        blink = (t // 500) % 2
+        color = (200, 200, 200) if blink else (255, 255, 255)
+
+        victory_text3 = victory_font2.render("Click to return to menu", True, color)
+
         victory_rect = victory_text.get_rect(center=(400, 150))
         victory_rect2 = victory_text2.get_rect(center=(400, 220))
+        victory_rect3 = victory_text3.get_rect(center=(400, 280))
 
         screen.blit(victory_text, victory_rect)
         screen.blit(victory_text2, victory_rect2)
+        screen.blit(victory_text3, victory_rect3)
 
+        main_character_rect = main_character_rect_reset
+
+        if pygame.mouse.get_pressed()[0]:
+            current_state = "MENU"
+            door_open = False
 
     elif current_state == "GAME_OVER":
         screen.fill("black")
