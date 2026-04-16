@@ -7,6 +7,7 @@ pygame.init()
 # screen size
 screen_width = 800
 screen_height = 400
+door_open = False
 
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('Schooltale')
@@ -193,8 +194,11 @@ while True:
 
     # FREE ROAM
     if current_state == "OUTSIDE_FREE_ROAM":
-        screen.blit(outside_background_surf, outside_background_rect)
-        screen.blit(main_character_surf, main_character_rect)
+        if door_open:
+            screen.blit(outside_background_open_surf, outside_background_rect)
+        else:
+            screen.blit(outside_background_closed_surf, outside_background_rect)
+            screen.blit(main_character_surf, main_character_rect)
 
         # controls
         keys = pygame.key.get_pressed()
@@ -208,8 +212,8 @@ while True:
             main_character_rect.x += 5
 
         # boundaries
-        if main_character_rect.top < 0:
-            main_character_rect.top = 0
+        if main_character_rect.top < 40:
+            main_character_rect.top = 40
         if main_character_rect.left < 0:
             main_character_rect.left = 0
         if main_character_rect.bottom > screen_height:
@@ -221,6 +225,8 @@ while True:
 
         door_collision_rect = pygame.Rect(270, 75, 180, 10)
         if main_character_rect.colliderect(door_collision_rect):
+            door_open = True
+
             outside_background_surf = outside_background_open_surf
             screen.blit(prompt_surf, prompt_surf_rect)
             pygame.draw.rect(prompt_surf, 'white', prompt_surf.get_rect(), 3)
@@ -228,13 +234,18 @@ while True:
             screen.blit(yes_choice, yes_choice_rect)
             screen.blit(no_choice, no_choice_rect)
             mouse_pos = pygame.mouse.get_pos()
+
             if yes_choice_rect.collidepoint(mouse_pos) and pygame.mouse.get_pressed()[0]:
                 current_state = "INSIDE_CUTSCENE"
                 main_character_rect.center = (700, 220)
+
             elif no_choice_rect.collidepoint(mouse_pos) and pygame.mouse.get_pressed()[0]:
                 main_character_rect.y += 20
                 current_state = "OUTSIDE_FREE_ROAM"
                 outside_background_surf = outside_background_closed_surf
+                door_open = False
+        else:
+            door_open = False
 
     if current_state == "INSIDE_CUTSCENE":
         screen.blit(inside_background_surf, inside_background_rect)
